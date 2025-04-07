@@ -84,7 +84,7 @@ class TelemetryGUI(Node):
                     f"{Colors.GREEN}GYR Y:{Colors.RESET} {msg.gyry/GYRO_SENSITIVITY:.2f} deg/s | "                    
                     f"{Colors.BLUE}GYR Z:{Colors.RESET} {msg.gyrz/GYRO_SENSITIVITY:.2f} deg/s |   ",
                     
-                    f"{Colors.WHITE}[Mode 1/8]{Colors.RESET}"
+                    f"{Colors.WHITE}[Mode 1/6]{Colors.RESET}"
                 ]
             case 1:
                 lines = [
@@ -95,7 +95,7 @@ class TelemetryGUI(Node):
                     f"{Colors.BLUE}Motor3:{Colors.RESET} {msg.motor3} | "
                     f"{Colors.BLUE}Motor4:{Colors.RESET} {msg.motor4}",
                     
-                    f"{Colors.WHITE}[Mode 2/8]{Colors.RESET}"
+                    f"{Colors.WHITE}[Mode 2/6]{Colors.RESET}"
                 ]
             case 2:
                 lines = [
@@ -111,7 +111,7 @@ class TelemetryGUI(Node):
                     f"{Colors.GREEN}AUX4:{Colors.RESET} {msg.aux4} | "
                     f"{Colors.GREEN}AUX5:{Colors.RESET} {msg.aux5}",
 
-                    f"{Colors.WHITE}[Mode 3/8]{Colors.RESET}"
+                    f"{Colors.WHITE}[Mode 3/6]{Colors.RESET}"
                 ]
             case 3:
                 lines = [
@@ -127,15 +127,15 @@ class TelemetryGUI(Node):
                     f"{Colors.YELLOW}Speed:{Colors.RESET} {msg.speed} cm/s | "
                     f"{Colors.SOFT_PINK}Ground course:{Colors.RESET} {msg.groundcourse}",
 
-                    f"{Colors.WHITE}[Mode 4/8]{Colors.RESET}"
+                    f"{Colors.WHITE}[Mode 4/6]{Colors.RESET}"
                 ]
             case 4:
                 lines = [
                     f"{Colors.SOFT_YELLOW}---COMP GPS readings---{Colors.RESET}",
 
-                    f"{Colors.RED}NO GPS{Colors.RESET}",
+                    f"{Colors.RED}NOT USED{Colors.RESET}",
 
-                    f"{Colors.WHITE}[Mode 5/8]{Colors.RESET}"
+                    f"{Colors.WHITE}[Mode 5/6]{Colors.RESET}"
                 ]
             case 5:
                 lines = [
@@ -147,13 +147,7 @@ class TelemetryGUI(Node):
                     f"| {Colors.SOFT_BLUE}Estimated Altitude:{Colors.RESET} {msg.estalt} cm | "
                     f"{Colors.MAGENTA}Vario:{Colors.RESET} {msg.vario} cm/s |",
 
-                    f"{Colors.WHITE}[Mode 6/8]{Colors.RESET}"
-                ]
-            case 6:
-                lines = [
-                    f"{Colors.SOFT_YELLOW}---TBD---{Colors.RESET}",
-
-                    f"{Colors.WHITE}[Mode 7/8]{Colors.RESET}"
+                    f"{Colors.WHITE}[Mode 6/6]{Colors.RESET}"
                 ]
             
 

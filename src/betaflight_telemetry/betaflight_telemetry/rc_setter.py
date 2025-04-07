@@ -34,7 +34,7 @@ class SetRcChansClient(Node):
 
         # Store RC values from command line or use defaults
         if len(sys.argv) != 9:
-            self.get_logger().info('Using default RC values (neutral, throttle low, aux1 high for arming)')
+            self.get_logger().info('Using default RC values')
             self.roll = 1500
             self.pitch = 1500
             self.yaw = 1500
@@ -103,19 +103,7 @@ class SetRcChansClient(Node):
                 sys.stdout.write(f"\r{line}\033[K\n")
             
             sys.stdout.flush()
-#             self.get_logger().info(
-#                 f'''
-# Setting RC channels to:
-# roll - {self.roll}
-# pitch - {self.pitch}
-# yaw - {self.yaw}
-# throttle - {self.throttle}
-# aux1 - {self.aux1}
-# aux2 - {self.aux2}
-# aux3 - {self.aux3}
-# aux4 - {self.aux4}
-# ---
-# RC channels set successfully? - {response.success}''')
+
         except Exception as e:
             self.get_logger().error(f'Service call failed: {e}')
 

@@ -5,7 +5,8 @@ import serial
 from telemetry_interfaces.msg import RcChans, Telemetry
 from telemetry_interfaces.srv import SetMotors, SetRc
 
-MSP_IDENT = 100
+# GET commands
+MSP_IDENT = 100 # doesn't work
 MSP_STATUS = 101
 MSP_RAW_IMU = 102
 MSP_MOTOR = 104
@@ -16,16 +17,18 @@ MSP_ATTITUDE = 108
 MSP_ALTITUDE = 109
 MSP_ANALOG = 110
 
+# SET commands
 MSP_SET_RAW_RC = 200
 MSP_SET_MOTOR = 214
 MSP_ACC_CALIBRATION = 205
 
-MSP_ARMING_CONFIG = 61
+# tested, seem to be not working
+MSP_ARMING_CONFIG = 61 
 MSP_SET_ARMING_DISABLED = 99
 
+# Edit the REQUESTS array to receive specific commands. More commands means slower refresh.
 #REQUESTS = [MSP_RAW_IMU, MSP_MOTOR, MSP_RC, MSP_RAW_GPS, MSP_COMP_GPS, MSP_ATTITUDE, MSP_ALTITUDE, MSP_ANALOG]
 REQUESTS = [MSP_MOTOR, MSP_RC]
-COMMANDS_INT16 = [MSP_SET_MOTOR, MSP_SET_RAW_RC]
 
 class BetaflightTelemetryNode(Node):
     def __init__(self):
@@ -130,22 +133,17 @@ class BetaflightTelemetryNode(Node):
                 data_unit = byte
                 payload[keys[j]] = data_unit
                 j += 1
-                #self.get_logger().info(f"{j}. Parsing 8 bit integers")
             for i in range(data_index + 2, data_index + 10, 4):
                 byte = raw_data[i:i+4]
                 data_unit = int.from_bytes(byte, byteorder="little")
                 payload[keys[j]] = data_unit
                 j += 1
-                #self.get_logger().info(f"{j}. Parsing 32 bit integers")
             for i in range(data_index + 10, data_index + size - 2, 2):
                 byte = raw_data[i:i+2]
                 data_unit = int.from_bytes(byte, byteorder="little")
                 payload[keys[j]] = data_unit
                 j += 1
-                #self.get_logger().info(f"{j}. Parsing 16 bit integers")
         
-        # Write COMP GPS payload parsing when GPS is attached
-
         if command == MSP_ATTITUDE:
             keys = ['ANG X', 'ANG Y', 'Heading']
             j = 0
@@ -204,8 +202,6 @@ class BetaflightTelemetryNode(Node):
         msg.altitude = data.get('altitude', 0)
         msg.speed = data.get('speed', 0)
         msg.groundcourse = data.get('ground_course', 0)
-
-        # Package RAW and COMP GPS params when GPS is attached
 
         msg.angx = data.get("ANG X", 0)
         msg.angy = data.get("ANG Y", 0)
