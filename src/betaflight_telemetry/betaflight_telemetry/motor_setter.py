@@ -4,6 +4,8 @@ from rclpy.node import Node
 
 from telemetry_interfaces.srv import SetMotors
 
+# Probably shouldn't use this to actually fly, but it technically works.
+
 class SetMotorsClient(Node):
 
     def __init__(self):

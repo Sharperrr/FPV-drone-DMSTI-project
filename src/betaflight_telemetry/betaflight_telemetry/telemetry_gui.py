@@ -34,6 +34,7 @@ class TelemetryGUI(Node):
     def __init__(self):
         super().__init__('telemetry_gui')
 
+        # Subscribe to betaflight_telemetry topic, that telemetry_node publishes to
         self.subscription = self.create_subscription(
             Telemetry,
             '/betaflight_telemetry',

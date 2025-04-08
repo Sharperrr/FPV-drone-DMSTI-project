@@ -40,20 +40,25 @@ class BetaflightTelemetryNode(Node):
         self.telemetry = {}
 
         try:
+            # Open serial port for communication with the drone
             self.serial_port = serial.Serial(port, baud_rate, timeout=1)
             self.get_logger().info(f"Connected to {port} at {baud_rate} baud")
         except serial.SerialException:
             self.get_logger().error(f"Failed to connect to {port}")
             return
         
+        # Creates a publisher to publish data in a Telemetry format, to a topic called betaflight_telemetry. 100 is the buffer size for messages.
         self.telemetry_publisher = self.create_publisher(Telemetry, 'betaflight_telemetry', 100)
 
-        self.timer = self.create_timer(0.001, self.read_telemetry)
+        # Timer to call read_telemetry function every 0.01 seconds
+        self.timer = self.create_timer(0.01, self.read_telemetry)
 
+        # Creates services used to activate set commands. Format: (Service type, service name, function called upon receiving service request)
         self.set_motors_srv = self.create_service(SetMotors, 'motor_control', self.set_motors_callback)
         self.set_rc_srv = self.create_service(SetRc, 'rc_control', self.set_rc_callback) 
 
     def create_msp_request(self, command, request_data=None):
+        """Creates an msp request, ready to be sent to the drone."""
         # Preamble ($M)
         preamble = bytearray([0x24, 0x4D])
         # Direction ('>') to the MWC (flight controller)
@@ -65,7 +70,6 @@ class BetaflightTelemetryNode(Node):
         if not request_data is None:
             for value in request_data:
                 data_bytes.append(value)
-        #self.get_logger().info(f"Data looks like this: {data_bytes.hex()}")
         
         size = bytearray([0x00]) if request_data is None else bytearray([len(data_bytes)]) 
 
@@ -83,6 +87,7 @@ class BetaflightTelemetryNode(Node):
         return message
 
     def parse_msp(self, raw_data):
+        """Finds the data section of an msp response"""
         for i in range(len(raw_data) - 4):
             if raw_data[i:i+3] == b'\x24\x4D\x3E':
                 size = raw_data[i+3]
@@ -96,6 +101,7 @@ class BetaflightTelemetryNode(Node):
         return {}
     
     def parse_data(self, size, command, raw_data, data_index):
+        """Parses the response data and packages it into a dictionary payload"""
         payload = {}
         if command == MSP_RAW_IMU:
             keys = ['ACC X', 'ACC Y', 'ACC Z', 'GYR X', 'GYR Y', 'GYR Z', 'MAG X', 'MAG Y', 'MAG Z']
@@ -168,6 +174,7 @@ class BetaflightTelemetryNode(Node):
         return payload
     
     def package_data(self, data):
+        """Packages all the received data into the Telemetry message type. Returns a ready to send Telemetry message."""
         msg = Telemetry()
 
         msg.accx = data.get("ACC X", 0)
@@ -214,14 +221,10 @@ class BetaflightTelemetryNode(Node):
 
     def read_telemetry(self):
         """Read raw MSP data from Betaflight and print it."""
+        # This function will loop through all the commands in REQUESTS and every time it goes through the whole array will publish a Telemetry message to the topic
         command = REQUESTS[self.request_index]
-        if command == MSP_SET_MOTOR:
-            #set_data = bytearray.fromhex("dc05 dc05 dc05 b907 e803 e803 e803 e803 e803 0000 0000 0000 0000 0000 0000 0000")
-            set_data = bytearray.fromhex("5704 5704 5704 5704 0000 0000 0000 0000")
-            msp_request = self.create_msp_request(command, set_data)
-        else:
-            msp_request = self.create_msp_request(command)
-        
+        msp_request = self.create_msp_request(command)
+            
         self.serial_port.write(msp_request)
         
         if self.serial_port.in_waiting > 0:
@@ -244,6 +247,7 @@ class BetaflightTelemetryNode(Node):
         set_data += request.motor2.to_bytes(2, byteorder='little', signed=False)
         set_data += request.motor3.to_bytes(2, byteorder='little', signed=False)
         set_data += request.motor4.to_bytes(2, byteorder='little', signed=False)
+        # The command takes more values than we are using, so set those to 0
         set_data += bytearray.fromhex("0000 0000 0000 0000")
 
         self.get_logger().info(f'\033[38;5;151m Received set data: {set_data.hex()} \033[0m')
@@ -265,6 +269,7 @@ class BetaflightTelemetryNode(Node):
         set_data += request.aux2.to_bytes(2, byteorder='little', signed=False)
         set_data += request.aux3.to_bytes(2, byteorder='little', signed=False)
         set_data += request.aux4.to_bytes(2, byteorder='little', signed=False)
+        # The command takes more channels than we are using, so set those to 0
         set_data += bytearray.fromhex("0000 0000 0000 0000 0000 0000 0000 0000")
 
         self.get_logger().info(f'\033[38;5;151m Received set RC data: {set_data.hex()} \033[0m')

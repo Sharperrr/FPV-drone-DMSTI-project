@@ -23,7 +23,6 @@ class Colors:
     SOFT_PINK = "\033[38;5;218m"
     SOFT_BLUE = "\033[38;5;153m"
 
-
 class SetRcChansClient(Node):
 
     def __init__(self):
@@ -33,6 +32,7 @@ class SetRcChansClient(Node):
             self.get_logger().info('Service not available, waiting again...')
 
         # Store RC values from command line or use defaults
+        # Drone msp_override only uses only roll, pitch, yaw, throttle, so you could just delete the aux channels 
         if len(sys.argv) != 9:
             self.get_logger().info('Using default RC values')
             self.roll = 1500
