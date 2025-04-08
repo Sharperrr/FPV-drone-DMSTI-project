@@ -15,7 +15,6 @@ find_package(std_msgs REQUIRED)
 
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/RcChans.msg"
   "msg/Telemetry.msg"
   "srv/SetMotors.srv"
   "srv/SetRc.srv"

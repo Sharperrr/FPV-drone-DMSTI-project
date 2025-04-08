@@ -1,9 +1,0 @@
-int16 roll
-int16 pitch
-int16 yaw
-int16 throttle
-int16 aux1
-int16 aux2
-int16 aux3
-int16 aux4
-int16 aux5
